@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <script src="chat.js" defer></script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Step 2 - Your Wishes</title>
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500&family=Karla&display=swap" rel="stylesheet">
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Karla', sans-serif;
+      background-color: #1C1C1E;
+      color: #FFFFFF;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 2rem 1rem;
+    }
+    h2 {
+      font-family: 'Orbitron', sans-serif;
+      color: #A0C4FF;
+      margin-bottom: 1rem;
+    }
+    p {
+      font-size: 1rem;
+      color: #CCCCCC;
+      margin-bottom: 1.5rem;
+      text-align: center;
+      max-width: 320px;
+    }
+    label {
+      font-size: 1rem;
+      margin-top: 1rem;
+      margin-bottom: 0.5rem;
+      display: block;
+    }
+    input[type="text"] {
+      width: 100%;
+      max-width: 300px;
+      padding: 0.5rem;
+      border-radius: 8px;
+      border: none;
+      background-color: #2D2D31;
+      color: #FFF;
+      font-size: 1rem;
+    }
+    .next-button {
+      margin-top: 2rem;
+      background: linear-gradient(135deg, #FF8FAB, #A0C4FF);
+      border: none;
+      border-radius: 25px;
+      padding: 0.75rem 1.5rem;
+      color: #1C1C1E;
+      font-weight: bold;
+      font-size: 1rem;
+      cursor: pointer;
+      transition: transform 0.2s;
+    }
+    .next-button:hover {
+      transform: scale(1.05);
+    }
+  </style>
+</head>
+<body>
+  <h2>Step 2 of 3: Your Wishes</h2>
+  <p>What do you desire most? (Max 3)<br>Examples: Love, Health, Wealth, Creativity...</p>
+  <form onsubmit="event.preventDefault(); saveStep2();">
+    <label for="wish1">Wish #1:</label>
+    <input type="text" id="wish1" name="wish1" required>
+
+    <label for="wish2">Wish #2 (optional):</label>
+    <input type="text" id="wish2" name="wish2">
+
+    <label for="wish3">Wish #3 (optional):</label>
+    <input type="text" id="wish3" name="wish3">
+
+    <button type="submit" class="next-button">Next →</button>
+  </form>
+</body>
+</html>

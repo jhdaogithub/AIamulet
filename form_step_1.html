@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <script src="chat.js" defer></script>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Step 1 - Your Info</title>
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500&family=Karla&display=swap" rel="stylesheet">
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Karla', sans-serif;
+      background-color: #1C1C1E;
+      color: #FFFFFF;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 2rem 1rem;
+    }
+    h2 {
+      font-family: 'Orbitron', sans-serif;
+      color: #A0C4FF;
+      margin-bottom: 1rem;
+    }
+    label {
+      font-size: 1rem;
+      margin-top: 1.5rem;
+      margin-bottom: 0.5rem;
+      display: block;
+    }
+    input[type="date"], select {
+      width: 100%;
+      max-width: 300px;
+      padding: 0.5rem;
+      border-radius: 8px;
+      border: none;
+      background-color: #2D2D31;
+      color: #FFF;
+      font-size: 1rem;
+    }
+    .next-button {
+      margin-top: 2rem;
+      background: linear-gradient(135deg, #FF8FAB, #A0C4FF);
+      border: none;
+      border-radius: 25px;
+      padding: 0.75rem 1.5rem;
+      color: #1C1C1E;
+      font-weight: bold;
+      font-size: 1rem;
+      cursor: pointer;
+      transition: transform 0.2s;
+    }
+    .next-button:hover {
+      transform: scale(1.05);
+    }
+  </style>
+</head>
+<body>
+  <h2>Step 1 of 3: Tell Us About You</h2>
+
+  <form onsubmit="event.preventDefault(); saveStep1();">
+    <label for="dob">Birth Date:</label>
+    <input type="date" id="dob" name="dob" required>
+
+    <label for="gender">Gender:</label>
+    <select id="gender" name="gender" required>
+      <option value="">Select</option>
+      <option value="male">Male</option>
+      <option value="female">Female</option>
+      <option value="nonbinary">Non-binary</option>
+      <option value="prefer-not">Prefer not to say</option>
+    </select>
+
+    <button type="submit" class="next-button">Next →</button>
+  </form>
+</body>
+</html>
