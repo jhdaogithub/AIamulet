@@ -1,4 +1,4 @@
-// chat.js – Handles amulet generation interaction
+// chat.js – Handles amulet generation interaction with image + text
 
 let userInput = {
   birthdate: '',
@@ -7,7 +7,7 @@ let userInput = {
   style: ''
 };
 
-// Called in form_step1.html
+// Step 1
 function saveStep1() {
   const dob = document.getElementById('dob').value;
   const gender = document.getElementById('gender').value;
@@ -19,7 +19,7 @@ function saveStep1() {
   window.location.href = 'form_step2.html';
 }
 
-// Called in form_step2.html
+// Step 2
 function saveStep2() {
   const wish1 = document.getElementById('wish1').value.trim();
   const wish2 = document.getElementById('wish2').value.trim();
@@ -33,7 +33,7 @@ function saveStep2() {
   window.location.href = 'form_step3.html';
 }
 
-// Called in form_step3.html
+// Step 3
 function saveStep3() {
   const selected = document.querySelector('input[name="style"]:checked');
   if (!selected) return alert('Please choose a style.');
@@ -45,11 +45,14 @@ function saveStep3() {
   window.location.href = 'loading.html';
 }
 
-// Called in loading.html
+// Loading page
 async function generateAmulet() {
   const input = JSON.parse(localStorage.getItem('amuletInput'));
   if (!input) {
-    localStorage.setItem('amuletResult', 'Missing input data.');
+    localStorage.setItem('amuletResult', JSON.stringify({
+      description: 'Missing input data.',
+      imageUrl: ''
+    }));
     window.location.href = 'result.html';
     return;
   }
@@ -67,19 +70,41 @@ async function generateAmulet() {
     }
 
     const data = await res.json();
-    const output = data.result || 'No result received.';
-    localStorage.setItem('amuletResult', output);
+    const result = {
+      description: data.description || 'No description returned.',
+      imageUrl: data.imageUrl || ''
+    };
+
+    localStorage.setItem('amuletResult', JSON.stringify(result));
     window.location.href = 'result.html';
 
   } catch (err) {
-    console.error('API error:', err);
-    localStorage.setItem('amuletResult', 'Failed to generate amulet. Please try again later.');
+    console.error('Amulet generation error:', err);
+    localStorage.setItem('amuletResult', JSON.stringify({
+      description: 'Failed to generate amulet.',
+      imageUrl: ''
+    }));
     window.location.href = 'result.html';
   }
 }
 
-// Called in result.html
+// Result page
 function displayResult() {
-  const result = localStorage.getItem('amuletResult') || 'No result.';
-  document.getElementById('result-text').innerText = result;
+  const { description, imageUrl } = JSON.parse(localStorage.getItem('amuletResult') || '{}');
+
+  const textDiv = document.getElementById('result-text');
+  const imgDiv = document.getElementById('result-image');
+
+  if (description) {
+    textDiv.innerText = description;
+  }
+
+  if (imageUrl) {
+    const img = document.createElement('img');
+    img.src = imageUrl;
+    img.alt = 'Generated Amulet';
+    img.style.width = '100%';
+    img.style.borderRadius = '12px';
+    imgDiv.appendChild(img);
+  }
 }
