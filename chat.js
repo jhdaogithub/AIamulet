@@ -1,83 +1,109 @@
-export default async function handler(req, res) {
-  if (req.method !== 'POST') {
-    return res.status(405).json({ error: 'Only POST requests allowed' });
+// chat.js – Handles amulet generation from Step 1 to result
+
+// Step 1 - Save DOB + gender
+function saveStep1() {
+  const dob = document.getElementById('dob').value;
+  const gender = document.getElementById('gender').value;
+  if (!dob || !gender) return alert('Please fill in all fields.');
+
+  const userInput = {
+    birthdate: dob,
+    gender: gender,
+    wishes: [],
+    style: ""
+  };
+
+  localStorage.setItem('amuletInput', JSON.stringify(userInput));
+  window.location.href = 'form_step2.html';
+}
+
+// Step 2 - Save wishes
+function saveStep2() {
+  const wish1 = document.getElementById('wish1').value.trim();
+  const wish2 = document.getElementById('wish2').value.trim();
+  const wish3 = document.getElementById('wish3').value.trim();
+
+  const saved = JSON.parse(localStorage.getItem('amuletInput')) || {};
+  saved.wishes = [wish1, wish2, wish3].filter(w => w);
+  if (saved.wishes.length === 0) return alert('Enter at least one wish.');
+
+  localStorage.setItem('amuletInput', JSON.stringify(saved));
+  window.location.href = 'form_step3.html';
+}
+
+// Step 3 - Save style
+function saveStep3() {
+  const selected = document.querySelector('input[name="style"]:checked');
+  if (!selected) return alert('Please choose a style.');
+
+  const saved = JSON.parse(localStorage.getItem('amuletInput')) || {};
+  saved.style = selected.value;
+
+  localStorage.setItem('amuletInput', JSON.stringify(saved));
+  window.location.href = 'loading.html';
+}
+
+// Loading - Generate Amulet
+async function generateAmulet() {
+  const input = JSON.parse(localStorage.getItem('amuletInput'));
+  if (!input || !input.birthdate || !input.gender || !input.wishes || !input.style) {
+    localStorage.setItem('amuletResult', JSON.stringify({
+      description: 'Missing input data.',
+      imageUrl: ''
+    }));
+    window.location.href = 'result.html';
+    return;
   }
-
-  const { birthdate, gender, wishes, style } = req.body;
-
-  if (!process.env.OPENROUTER_API_KEY) {
-    console.error('Missing OpenRouter API key');
-    return res.status(500).json({ error: 'Missing API key' });
-  }
-
-  const prompt = `
-You are a mystical amulet designer. Given the user's info below, generate a mystical description and an image prompt in this format only:
-
-JSON.stringify({
-  "description": "string of poetic explanation",
-  "imagePrompt": "image generation prompt based on wishes and style"
-})
-
-No extra text. No explanation. Just output the stringified JSON object.
-
-User Info:
-- Birthdate: ${birthdate}
-- Gender: ${gender}
-- Wishes: ${wishes.join(', ')}
-- Style: ${style}
-  `.trim();
 
   try {
-    // GPT: 获取描述和图像 prompt
-    const gptRes = await fetch("https://openrouter.ai/api/v1/chat/completions", {
-      method: "POST",
-      headers: {
-        Authorization: `Bearer ${process.env.OPENROUTER_API_KEY}`,
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify({
-        model: "openai/gpt-4o",
-        messages: [{ role: "user", content: prompt }]
-      })
+    const res = await fetch('/api/generate', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(input)
     });
 
-    const gptData = await gptRes.json();
-    const reply = gptData.choices?.[0]?.message?.content || '';
-
-    // 正则提取 JSON.stringify({...})
-    const match = reply.match(/\{[\s\S]*\}/);
-    if (!match) throw new Error('Failed to extract JSON from GPT reply.');
-
-    const parsed = JSON.parse(match[0]);
-    const { description, imagePrompt } = parsed;
-
-    if (!imagePrompt || !description) {
-      throw new Error('Missing fields in GPT result');
+    if (!res.ok) {
+      const errText = await res.text().catch(() => '');
+      throw new Error(errText || res.statusText);
     }
 
-    // 图像生成
-    const imageRes = await fetch("https://openrouter.ai/api/v1/images/generations", {
-      method: "POST",
-      headers: {
-        Authorization: `Bearer ${process.env.OPENROUTER_API_KEY}`,
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify({
-        model: "openai/dall-e-3",
-        prompt: imagePrompt,
-        size: "1024x1024",
-        n: 1
-      })
-    });
+    const data = await res.json();
+    const result = {
+      description: data.description || 'No description returned.',
+      imageUrl: data.imageUrl || ''
+    };
 
-    const imageData = await imageRes.json();
-    const imageUrl = imageData?.data?.[0]?.url;
-    if (!imageUrl) throw new Error('Image generation failed.');
-
-    return res.status(200).json({ description, imageUrl });
+    localStorage.setItem('amuletResult', JSON.stringify(result));
+    window.location.href = 'result.html';
 
   } catch (err) {
     console.error('Amulet generation error:', err);
-    return res.status(500).json({ error: 'Failed to generate amulet' });
+    localStorage.setItem('amuletResult', JSON.stringify({
+      description: 'Failed to generate amulet.',
+      imageUrl: ''
+    }));
+    window.location.href = 'result.html';
   }
 }
+
+// Result - Display image + description
+function displayResult() {
+  const { description, imageUrl } = JSON.parse(localStorage.getItem('amuletResult') || '{}');
+
+  const textDiv = document.getElementById('result-text');
+  const imgDiv = document.getElementById('result-image');
+
+  if (description) {
+    textDiv.innerText = description;
+  }
+
+  if (imageUrl) {
+    const img = document.createElement('img');
+    img.src = imageUrl;
+    img.alt = 'Generated Amulet';
+    img.style.width = '100%';
+    img.style.borderRadius = '12px';
+    imgDiv.appendChild(img);
+  }
+}
+
