@@ -49,6 +49,11 @@ function saveStep3() {
 async function generateAmulet() {
   const input = JSON.parse(localStorage.getItem('amuletInput'));
   if (!input) return alert('Missing input data.');
+  if (!input) {
+    localStorage.setItem('amuletResult', 'Missing input data.');
+    window.location.href = 'result.html';
+    return;
+  }
 
   try {
     const res = await fetch('/API/generate', {
@@ -56,17 +61,28 @@ async function generateAmulet() {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(input)
     });
+
+    if (!res.ok) {
+      // Try to grab a server-provided error message; fall back to status text
+      const errText = await res.text().catch(() => '');
+      throw new Error(errText || res.statusText);
+    }
+
     const data = await res.json();
     localStorage.setItem('amuletResult', data.result);
     window.location.href = 'result.html';
+    localStorage.setItem('amuletResult', data.result || 'No result.');
   } catch (err) {
     alert('Failed to generate amulet.');
     console.error(err);
+    localStorage.setItem('amuletResult', 'Failed to generate amulet. Please try again later.');
   }
+
+  window.location.href = 'result.html';
 }
 
 // Called in result.html
 function displayResult() {
   const result = localStorage.getItem('amuletResult') || 'No result.';
   document.getElementById('result-text').innerText = result;
-}
+}  
