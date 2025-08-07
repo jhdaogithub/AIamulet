@@ -7,7 +7,7 @@ let userInput = {
   style: ''
 };
 
-// Called in form-step1.html
+// Called in form_step1.html
 function saveStep1() {
   const dob = document.getElementById('dob').value;
   const gender = document.getElementById('gender').value;
@@ -16,10 +16,10 @@ function saveStep1() {
   userInput.birthdate = dob;
   userInput.gender = gender;
   localStorage.setItem('amuletInput', JSON.stringify(userInput));
-  window.location.href = 'form-step2.html';
+  window.location.href = 'form_step2.html';
 }
 
-// Called in form-step2.html
+// Called in form_step2.html
 function saveStep2() {
   const wish1 = document.getElementById('wish1').value.trim();
   const wish2 = document.getElementById('wish2').value.trim();
@@ -30,10 +30,10 @@ function saveStep2() {
   if (saved.wishes.length === 0) return alert('Enter at least one wish.');
 
   localStorage.setItem('amuletInput', JSON.stringify(saved));
-  window.location.href = 'form-step3.html';
+  window.location.href = 'form_step3.html';
 }
 
-// Called in form-step3.html
+// Called in form_step3.html
 function saveStep3() {
   const selected = document.querySelector('input[name="style"]:checked');
   if (!selected) return alert('Please choose a style.');
