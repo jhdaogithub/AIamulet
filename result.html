@@ -25,17 +25,19 @@
       color: #A0C4FF;
       margin-bottom: 1rem;
     }
-    .amulet-image {
-      width: 80%;
-      max-width: 300px;
-      height: auto;
-      border-radius: 12px;
-      margin: 1rem 0;
-      background-color: #2D2D31;
+    #result-image {
+      width: 100%;
+      max-width: 320px;
+      margin-bottom: 1rem;
       display: flex;
       justify-content: center;
-      align-items: center;
-      padding: 1rem;
+    }
+    #result-text {
+      font-size: 1rem;
+      color: #CCCCCC;
+      text-align: center;
+      margin-bottom: 2rem;
+      max-width: 320px;
     }
     .action-buttons {
       display: flex;
@@ -62,11 +64,8 @@
 </head>
 <body>
   <h2>Your Amulet is Ready!</h2>
-
-  <div class="amulet-image" id="result-text">
-    Loading your amulet...
-  </div>
-
+  <div id="result-image"></div>
+  <div id="result-text">Loading...</div>
   <div class="action-buttons">
     <button onclick="alert('Downloading...')">Download</button>
     <button onclick="alert('Sharing...')">Share</button>
