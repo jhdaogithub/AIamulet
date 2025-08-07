@@ -51,7 +51,7 @@ async function generateAmulet() {
   if (!input) return alert('Missing input data.');
 
   try {
-    const res = await fetch('/api/generate', {
+    const res = await fetch('/API/generate', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(input)
